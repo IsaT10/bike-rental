@@ -1,19 +1,18 @@
 import { Router } from 'express';
-import {
-  createUser,
-  getAllUsers,
-  getSingleUser,
-  updateUser,
-} from './user.controller';
+import { getProfile, updateProfile } from './user.controller';
+import { auth } from '../../middleware/auth';
 import validateRequest from '../../middleware/validateRequest';
-import { createUserValidationSchema } from './user.validation';
+import { updateUserValidationSchema } from './user.validation';
 
 const router = Router();
 
-router.get('/', getAllUsers);
-router.post('/', validateRequest(createUserValidationSchema), createUser);
+router.get('/me', auth('admin', 'user'), getProfile);
 
-router.patch('/:id', updateUser);
-router.get('/:id', getSingleUser);
+router.put(
+  '/me',
+  auth('admin', 'user'),
+  validateRequest(updateUserValidationSchema),
+  updateProfile
+);
 
 export default router;

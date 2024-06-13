@@ -1,43 +1,22 @@
-import QueryBuilder from '../../builder/QueryBuilder';
-import { TUser } from './user.interface';
+import { JwtPayload } from 'jsonwebtoken';
 import { User } from './user.model';
+import { TUser } from './user.interface';
 
-const createUserIntoDB = async (payload: TUser) => {
-  const result = await User.create(payload);
-
-  return result;
-};
-
-const getAllUsersFromDB = async (query: Record<string, unknown>) => {
-  const searchableFields = ['name', 'email'];
-
-  const userQuery = new QueryBuilder(User.find(), query)
-    .search(searchableFields)
-    .fields()
-    .pagination()
-    .sort()
-    .filter();
-
-  const result = await userQuery.queryModel;
+const getProfileFromDB = async (payload: JwtPayload) => {
+  const result = await User.findOne({ email: payload.email });
 
   return result;
 };
 
-const getSingleUserFromDB = async (id: string) => {
-  const result = await User.findById(id);
+const updateProfileIntoDB = async (email: string, payload: Partial<TUser>) => {
+  const result = await User.findOneAndUpdate({ email }, payload, {
+    new: true,
+    runValidators: true,
+  });
 
-  return result;
+  const { updatedAt, createdAt, ...remaining } = result!.toObject();
+
+  return remaining;
 };
 
-const updateUserIntoDB = async (id: string, payload: Partial<TUser>) => {
-  const result = await User.findByIdAndUpdate(id, payload, { new: true });
-
-  return result;
-};
-
-export {
-  createUserIntoDB,
-  getAllUsersFromDB,
-  updateUserIntoDB,
-  getSingleUserFromDB,
-};
+export { updateProfileIntoDB, getProfileFromDB };

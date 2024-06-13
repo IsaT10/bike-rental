@@ -2,56 +2,29 @@ import { Request, Response } from 'express';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status';
-import {
-  createUserIntoDB,
-  getAllUsersFromDB,
-  getSingleUserFromDB,
-  updateUserIntoDB,
-} from './user.service';
+import { getProfileFromDB, updateProfileIntoDB } from './user.service';
 
-const createUser = catchAsync(async (req: Request, res: Response) => {
-  const data = await createUserIntoDB(req.body);
+const getProfile = catchAsync(async (req: Request, res: Response) => {
+  const data = await getProfileFromDB(req.user);
 
   sendResponse(res, {
     success: true,
-    statusCode: httpStatus.CREATED,
-    message: 'user create succefully',
-    data,
-  });
-});
-const getAllUsers = catchAsync(async (req: Request, res: Response) => {
-  const data = await getAllUsersFromDB(req.query);
-
-  sendResponse(res, {
-    success: true,
-    statusCode: httpStatus.CREATED,
-    message: 'user retrived succefully',
+    statusCode: httpStatus.OK,
+    message: 'User profile retrieved successfully',
     data,
   });
 });
 
-const getSingleUser = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const data = await getSingleUserFromDB(id);
+const updateProfile = catchAsync(async (req: Request, res: Response) => {
+  const { email } = req.user;
+  const data = await updateProfileIntoDB(email, req.body);
 
   sendResponse(res, {
     success: true,
-    statusCode: httpStatus.CREATED,
-    message: 'user retrived succefully',
+    statusCode: httpStatus.OK,
+    message: 'Profile updated successfully',
     data,
   });
 });
 
-const updateUser = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const data = await updateUserIntoDB(id, req.body);
-
-  sendResponse(res, {
-    success: true,
-    statusCode: httpStatus.CREATED,
-    message: 'user updated succefully',
-    data,
-  });
-});
-
-export { createUser, getAllUsers, updateUser, getSingleUser };
+export { updateProfile, getProfile };
