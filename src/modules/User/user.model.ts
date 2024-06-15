@@ -2,6 +2,8 @@ import { Schema, model } from 'mongoose';
 import { TUser, UserModel } from './user.interface';
 import bcrypt from 'bcrypt';
 import config from '../../config';
+import AppError from '../../error/appError';
+import httpStatus from 'http-status';
 
 const UserSchema = new Schema<TUser, UserModel>(
   {
@@ -33,6 +35,15 @@ UserSchema.statics.isPasswordMatched = async function (
   hashPassword: string
 ) {
   return await bcrypt.compare(plainPassword, hashPassword);
+};
+
+UserSchema.statics.isValidUser = async function (id: string) {
+  const user = await User.findById(id);
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'No Data Found');
+  }
+  return user;
 };
 
 export const User = model<TUser, UserModel>('User', UserSchema);

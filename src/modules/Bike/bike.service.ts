@@ -1,3 +1,5 @@
+import httpStatus from 'http-status';
+import AppError from '../../error/appError';
 import { TBike } from './bike.interface';
 import { Bike } from './bike.model';
 
@@ -18,6 +20,10 @@ const updateBikeIntoDB = async (id: string, payload: Partial<TBike>) => {
     new: true,
     runValidators: true,
   });
+
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, 'No data found');
+  }
 
   return result;
 };

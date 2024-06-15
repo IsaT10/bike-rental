@@ -21,14 +21,14 @@ const userSignUp = async (payload: TUser) => {
 
 const userLogin = async (payload: TLogin) => {
   const isUserExists = await User.findOne({ email: payload.email }).select(
-    '+password -__v'
+    '+password -__v -updatedAt -createdAt '
   );
 
   if (!isUserExists) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');
   }
 
-  const { password, createdAt, updatedAt, ...user } = isUserExists.toObject();
+  const { password, ...user } = isUserExists.toObject();
 
   const isPasswordMatched = await User.isPasswordMatched(
     payload.password,
@@ -41,7 +41,7 @@ const userLogin = async (payload: TLogin) => {
   }
 
   const jwtPayload = {
-    email: isUserExists.email,
+    id: isUserExists._id,
     role: isUserExists.role,
   };
 

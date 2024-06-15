@@ -13,7 +13,9 @@ export const auth = (...requiredRoles: string[]) => {
     if (!accessToken) {
       throw new AppError(
         httpStatus.UNAUTHORIZED,
-        'You are not authorized to access this route'
+        'You have no access to this route'
+
+        // 'You are not logged in! please log in to get access.'
       );
     }
 
@@ -22,25 +24,21 @@ export const auth = (...requiredRoles: string[]) => {
       config.access_secret as string
     ) as JwtPayload;
 
-    const { role, email } = decoded;
+    const { id, role } = decoded;
 
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      throw new AppError(httpStatus.NOT_FOUND, 'User not found');
-    }
+    const user = await User.isValidUser(id);
 
     if (!requiredRoles.includes(role)) {
       throw new AppError(
         httpStatus.UNAUTHORIZED,
-        'You do not have permission to perform this action'
+        'You have no access to this route'
       );
     }
 
     if (user.role !== role) {
       throw new AppError(
         httpStatus.UNAUTHORIZED,
-        'You do not have permissiooooon to perform this action'
+        'You do not have permission to perform this action'
       );
     }
 

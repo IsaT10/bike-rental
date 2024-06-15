@@ -2,21 +2,21 @@ import { JwtPayload } from 'jsonwebtoken';
 import { User } from './user.model';
 import { TUser } from './user.interface';
 
-const getProfileFromDB = async (payload: JwtPayload) => {
-  const result = await User.findOne({ email: payload.email });
+const getProfileFromDB = async (id: string) => {
+  const result = await User.findById(id);
 
   return result;
 };
 
-const updateProfileIntoDB = async (email: string, payload: Partial<TUser>) => {
-  const result = await User.findOneAndUpdate({ email }, payload, {
+const updateProfileIntoDB = async (id: string, payload: Partial<TUser>) => {
+  const result = await User.findByIdAndUpdate(id, payload, {
     new: true,
     runValidators: true,
-  });
+  }).select('-updatedAt -createdAt -__v');
 
-  const { updatedAt, createdAt, ...remaining } = result!.toObject();
+  // const { updatedAt, createdAt, ...remaining } = result!.toObject();
 
-  return remaining;
+  return result;
 };
 
 export { updateProfileIntoDB, getProfileFromDB };

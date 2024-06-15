@@ -5,7 +5,9 @@ import httpStatus from 'http-status';
 import { getProfileFromDB, updateProfileIntoDB } from './user.service';
 
 const getProfile = catchAsync(async (req: Request, res: Response) => {
-  const data = await getProfileFromDB(req.user);
+  const { id } = req.user;
+
+  const data = await getProfileFromDB(id);
 
   sendResponse(res, {
     success: true,
@@ -16,8 +18,8 @@ const getProfile = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateProfile = catchAsync(async (req: Request, res: Response) => {
-  const { email } = req.user;
-  const data = await updateProfileIntoDB(email, req.body);
+  const { id } = req.user;
+  const data = await updateProfileIntoDB(id, req.body);
 
   sendResponse(res, {
     success: true,
