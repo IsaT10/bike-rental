@@ -26,7 +26,7 @@ const getAllBike = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: 'All bikes are retrived successfully',
+    message: 'Bikes retrived successfully',
     data,
   });
 });

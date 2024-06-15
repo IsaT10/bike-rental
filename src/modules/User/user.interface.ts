@@ -7,8 +7,8 @@ export interface TUser {
   phone: string;
   address: string;
   role: 'admin' | 'user';
-  createdAt: Date;
-  updatedAt: Date;
+  // createdAt: Date;
+  // updatedAt: Date;
 }
 
 export interface UserModel extends Model<TUser> {

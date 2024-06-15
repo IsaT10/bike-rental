@@ -8,6 +8,10 @@ const getProfileFromDB = async (id: string) => {
 };
 
 const updateProfileIntoDB = async (id: string, payload: Partial<TUser>) => {
+  if (payload.password) {
+    payload.password = await User.hashPassword(payload.password);
+  }
+
   const result = await User.findByIdAndUpdate(id, payload, {
     new: true,
     runValidators: true,

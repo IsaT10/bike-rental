@@ -28,7 +28,7 @@ const upadteRental = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: 'Rental updated successfully',
+    message: 'Bike returned successfully',
     data,
   });
 });

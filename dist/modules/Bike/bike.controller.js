@@ -32,7 +32,7 @@ const getAllBike = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
     (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: http_status_1.default.OK,
-        message: 'All bikes are retrived successfully',
+        message: 'Bikes retrived successfully',
         data,
     });
 }));

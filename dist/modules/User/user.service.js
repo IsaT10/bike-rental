@@ -17,6 +17,9 @@ const getProfileFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () 
 });
 exports.getProfileFromDB = getProfileFromDB;
 const updateProfileIntoDB = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    if (payload.password) {
+        payload.password = yield user_model_1.User.hashPassword(payload.password);
+    }
     const result = yield user_model_1.User.findByIdAndUpdate(id, payload, {
         new: true,
         runValidators: true,
