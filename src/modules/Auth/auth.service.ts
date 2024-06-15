@@ -7,10 +7,10 @@ import { TLogin } from './auth.interface';
 import config from '../../config';
 
 const userSignUp = async (payload: TUser) => {
+  //hash normal passwod
   const hashPassword = await User.hashPassword(payload.password);
 
   payload.password = hashPassword;
-  //   payload.role = 'user';
 
   const result = await User.create(payload);
 
@@ -24,6 +24,7 @@ const userLogin = async (payload: TLogin) => {
     '+password -__v -updatedAt -createdAt '
   );
 
+  // check is user exists
   if (!isUserExists) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');
   }
@@ -35,6 +36,7 @@ const userLogin = async (payload: TLogin) => {
     isUserExists?.password
   );
 
+  //check is password matched with hash password
   if (!isPasswordMatched) {
     throw new AppError(httpStatus.FORBIDDEN, 'Password does not matched');
   }
@@ -44,6 +46,7 @@ const userLogin = async (payload: TLogin) => {
     role: isUserExists.role,
   };
 
+  // create access token
   const accessToken = jwt.sign(jwtPayload, config.access_secret as string, {
     expiresIn: config.access_expires,
   });

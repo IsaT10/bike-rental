@@ -21,6 +21,7 @@ const updateBikeIntoDB = async (id: string, payload: Partial<TBike>) => {
     runValidators: true,
   });
 
+  //checked is updated id is exists
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, 'No data found');
   }

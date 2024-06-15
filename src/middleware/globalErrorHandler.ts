@@ -44,31 +44,11 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     stack,
   };
 
-  // if (statusCode !== httpStatus.UNAUTHORIZED) {
-  //   response.stack = stack;
-  // }
-
   if (statusCode === httpStatus.NOT_FOUND) {
     response.data = [];
   }
 
   res.status(statusCode).json(response);
-
-  // if (config.node_env === 'development') {
-  //   res.status(statusCode).json({
-  //     success: false,
-  //     message: message,
-  //     err,
-  //     stack: stack || err.stack,
-  //   });
-  // }
-
-  // if (config.node_env === 'production') {
-  //   res.status(statusCode).json({
-  //     success: false,
-  //     message: message,
-  //   });
-  // }
 };
 
 export default globalErrorHandler;

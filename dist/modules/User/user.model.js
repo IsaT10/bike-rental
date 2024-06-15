@@ -29,17 +29,20 @@ const UserSchema = new mongoose_1.Schema({
     address: { type: String, required: true },
     phone: { type: String, required: true },
 }, { timestamps: true });
+// hash normal password
 UserSchema.statics.hashPassword = function (plainPassword) {
     return __awaiter(this, void 0, void 0, function* () {
         const hashPassword = yield bcrypt_1.default.hash(plainPassword, Number(process.env.SALT_ROUNDS));
         return hashPassword;
     });
 };
+//check password matched
 UserSchema.statics.isPasswordMatched = function (plainPassword, hashPassword) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield bcrypt_1.default.compare(plainPassword, hashPassword);
     });
 };
+//check valid user
 UserSchema.statics.isValidUser = function (id) {
     return __awaiter(this, void 0, void 0, function* () {
         const user = yield exports.User.findById(id);

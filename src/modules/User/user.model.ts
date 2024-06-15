@@ -20,6 +20,7 @@ const UserSchema = new Schema<TUser, UserModel>(
   { timestamps: true }
 );
 
+// hash normal password
 UserSchema.statics.hashPassword = async function (plainPassword: string) {
   const hashPassword = await bcrypt.hash(
     plainPassword,
@@ -29,6 +30,7 @@ UserSchema.statics.hashPassword = async function (plainPassword: string) {
   return hashPassword;
 };
 
+//check password matched
 UserSchema.statics.isPasswordMatched = async function (
   plainPassword: string,
   hashPassword: string
@@ -36,6 +38,7 @@ UserSchema.statics.isPasswordMatched = async function (
   return await bcrypt.compare(plainPassword, hashPassword);
 };
 
+//check valid user
 UserSchema.statics.isValidUser = async function (id: string) {
   const user = await User.findById(id);
 

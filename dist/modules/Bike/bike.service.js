@@ -31,6 +31,7 @@ const updateBikeIntoDB = (id, payload) => __awaiter(void 0, void 0, void 0, func
         new: true,
         runValidators: true,
     });
+    //checked is updated id is exists
     if (!result) {
         throw new appError_1.default(http_status_1.default.NOT_FOUND, 'No data found');
     }

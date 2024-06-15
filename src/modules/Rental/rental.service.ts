@@ -10,6 +10,7 @@ import mongoose from 'mongoose';
 const createRentalIntoDB = async (id: string, payload: Partial<TRental>) => {
   const bike = await Bike.findById(payload.bikeId);
 
+  //check is bike exists
   if (!bike) {
     throw new AppError(
       httpStatus.NOT_FOUND,
@@ -17,19 +18,24 @@ const createRentalIntoDB = async (id: string, payload: Partial<TRental>) => {
     );
   }
 
+  // check is bike available for rent
   if (!bike.isAvailable) {
     throw new AppError(
       httpStatus.NOT_FOUND,
       'This bike is already busy with another tourist. Choose another bike!'
     );
   }
+
+  //check user is valid or not
   await User.isValidUser(id);
 
+  //start session for transaction rollback
   const session = await mongoose.startSession();
 
   try {
     session.startTransaction();
 
+    // transaction-1
     const updateBikeStatus = await Bike.findByIdAndUpdate(
       payload.bikeId,
       {
@@ -42,6 +48,7 @@ const createRentalIntoDB = async (id: string, payload: Partial<TRental>) => {
       throw new AppError(httpStatus.NOT_FOUND, 'Can not update bike status!');
     }
 
+    //transaction-2
     const result = await Rental.create([{ userId: id, ...payload }], {
       session,
     });
@@ -68,10 +75,12 @@ const updateRentalIntoDB = async (id: string) => {
     'bikeId'
   );
 
+  //check rental is exists
   if (!rental) {
     throw new AppError(httpStatus.NOT_FOUND, 'No Data Found');
   }
 
+  //calculate total cost
   const startTime = rental?.startTime.getTime();
   const returnTime = new Date().getTime();
   const hours = (returnTime - startTime) / (1000 * 60 * 60);
@@ -79,17 +88,20 @@ const updateRentalIntoDB = async (id: string) => {
     (hours * rental?.bikeId.pricePerHour).toFixed(2)
   );
 
+  //start session for transaction & rollback
   const session = await mongoose.startSession();
 
   try {
     session.startTransaction();
 
+    //transaction-1
     await Bike.findByIdAndUpdate(
       rental.bikeId,
       { isAvailable: true },
       { session }
     );
 
+    //transaction-2
     const result = await Rental.findByIdAndUpdate(
       id,
       {
@@ -118,6 +130,7 @@ const updateRentalIntoDB = async (id: string) => {
 };
 
 const getRentalFromDB = async (id: string) => {
+  //check user is exists or not
   await User.isValidUser(id);
 
   const result = await Rental.find({ userId: id });

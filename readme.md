@@ -1,3 +1,7 @@
+## Project Name
+
+BikeBay Rental
+
 ## Project Overview
 
 This project aims to develop an Express application using TypeScript, integrating MongoDB with Mongoose for effective data management. Data integrity is ensured through validation using Zod. Our backend system enables users to easily rent bikes online, manage bookings, and ensure secure user authentication and authorization.
@@ -11,6 +15,27 @@ This project aims to develop an Express application using TypeScript, integratin
 - Implement CRUD operations for bike
 - Implement rental management and bike status updates
 - Validate incoming data for bike, user, and rental creation using Zod
+
+## Technologies
+
+- Node.js
+- Express.js
+- Mongoose
+- Zod
+- Typescript
+- Jsonwebtoken
+
+## Features
+
+- The system supports user registration (/api/auth/signup), login (/api/auth/login), profile retrieval (/api/users/me), and profile updates (/api/users/me), including handling roles (admin/user) for authorization purposes.
+
+- Admins can manage bike details, including creating (/api/bikes), updating (/api/bikes/:id), and deleting (/api/bikes/:id) bike records, as well as retrieving the list of all bikes (/api/bikes). The bike model includes fields for availability, specifications, and rental pricing.
+
+- Users can create bike rentals (/api/rentals) and the system ensures the bike's availability status is updated. Admins can handle bike returns (/api/rentals/:id/return), calculating the rental cost based on the rental duration. Users can also view all their rentals (/api/rentals).
+
+- The system includes middleware for global error handling, providing consistent and informative error responses. Zod is used for input validation, ensuring data consistency and returning detailed error messages for validation failures.
+
+- JWT-based authentication is implemented, securing the routes. The auth middleware ensures that only authenticated users can access their respective routes, and role-based access control is enforced to restrict certain actions (e.g., only admins can manage bike records).
 
 ## Prerequisites
 
@@ -104,3 +129,6 @@ Ensure you have the following installed on your machine:
    - `GET` : `/api/rentals`: Retrieve all bikes. (Authorization Bearer TOKEN)
    - `POST` : `/api/rentals`: Create a bike. (Authorization Bearer TOKEN)
    - `PUT` : `/api/rentals/:id/return`: Update a rental. (Authorization Bearer TOKEN) admin
+
+[Blog Bloom](https://bike-rental-pied.vercel.app/ 'Blog Bloom')
+https://blog-bloom.netlify.app/

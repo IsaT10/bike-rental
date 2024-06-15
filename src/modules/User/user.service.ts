@@ -12,12 +12,11 @@ const updateProfileIntoDB = async (id: string, payload: Partial<TUser>) => {
     payload.password = await User.hashPassword(payload.password);
   }
 
+  //update profile
   const result = await User.findByIdAndUpdate(id, payload, {
     new: true,
     runValidators: true,
   }).select('-updatedAt -createdAt -__v');
-
-  // const { updatedAt, createdAt, ...remaining } = result!.toObject();
 
   return result;
 };

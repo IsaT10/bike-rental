@@ -23,14 +23,16 @@ const auth = (...requiredRoles) => {
     return (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         var _a;
         const accessToken = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(' ')[1];
+        //check is access token provide
         if (!accessToken) {
-            throw new appError_1.default(http_status_1.default.UNAUTHORIZED, 'You have no access to this route'
-            // 'You are not logged in! please log in to get access.'
-            );
+            throw new appError_1.default(http_status_1.default.UNAUTHORIZED, 'You have no access to this route');
         }
+        //decoded token and get payload data from token
         const decoded = jsonwebtoken_1.default.verify(accessToken, config_1.default.access_secret);
         const { id, role } = decoded;
+        //check is user valid
         const user = yield user_model_1.User.isValidUser(id);
+        //check have role based access
         if (!requiredRoles.includes(role)) {
             throw new appError_1.default(http_status_1.default.UNAUTHORIZED, 'You have no access to this route');
         }

@@ -10,15 +10,15 @@ export const auth = (...requiredRoles: string[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const accessToken = req.headers.authorization?.split(' ')[1];
 
+    //check is access token provide
     if (!accessToken) {
       throw new AppError(
         httpStatus.UNAUTHORIZED,
         'You have no access to this route'
-
-        // 'You are not logged in! please log in to get access.'
       );
     }
 
+    //decoded token and get payload data from token
     const decoded = jwt.verify(
       accessToken as string,
       config.access_secret as string
@@ -26,8 +26,10 @@ export const auth = (...requiredRoles: string[]) => {
 
     const { id, role } = decoded;
 
+    //check is user valid
     const user = await User.isValidUser(id);
 
+    //check have role based access
     if (!requiredRoles.includes(role)) {
       throw new AppError(
         httpStatus.UNAUTHORIZED,

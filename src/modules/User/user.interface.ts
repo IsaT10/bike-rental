@@ -7,10 +7,8 @@ export interface TUser {
   phone: string;
   address: string;
   role: 'admin' | 'user';
-  // createdAt: Date;
-  // updatedAt: Date;
 }
-
+//create some statics methods
 export interface UserModel extends Model<TUser> {
   hashPassword: (plainPassword: string) => Promise<string>;
   isValidUser: (id: string) => Promise<TUser>;

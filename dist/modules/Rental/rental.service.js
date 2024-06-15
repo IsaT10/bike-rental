@@ -21,22 +21,28 @@ const rental_model_1 = require("./rental.model");
 const mongoose_1 = __importDefault(require("mongoose"));
 const createRentalIntoDB = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
     const bike = yield bike_model_1.Bike.findById(payload.bikeId);
+    //check is bike exists
     if (!bike) {
         throw new appError_1.default(http_status_1.default.NOT_FOUND, 'Bike not found! Please select another bike.');
     }
+    // check is bike available for rent
     if (!bike.isAvailable) {
         throw new appError_1.default(http_status_1.default.NOT_FOUND, 'This bike is already busy with another tourist. Choose another bike!');
     }
+    //check user is valid or not
     yield user_model_1.User.isValidUser(id);
+    //start session for transaction rollback
     const session = yield mongoose_1.default.startSession();
     try {
         session.startTransaction();
+        // transaction-1
         const updateBikeStatus = yield bike_model_1.Bike.findByIdAndUpdate(payload.bikeId, {
             isAvailable: false,
         }, { session });
         if (!updateBikeStatus) {
             throw new appError_1.default(http_status_1.default.NOT_FOUND, 'Can not update bike status!');
         }
+        //transaction-2
         const result = yield rental_model_1.Rental.create([Object.assign({ userId: id }, payload)], {
             session,
         });
@@ -55,17 +61,22 @@ const createRentalIntoDB = (id, payload) => __awaiter(void 0, void 0, void 0, fu
 exports.createRentalIntoDB = createRentalIntoDB;
 const updateRentalIntoDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const rental = yield rental_model_1.Rental.findById(id).populate('bikeId');
+    //check rental is exists
     if (!rental) {
         throw new appError_1.default(http_status_1.default.NOT_FOUND, 'No Data Found');
     }
+    //calculate total cost
     const startTime = rental === null || rental === void 0 ? void 0 : rental.startTime.getTime();
     const returnTime = new Date().getTime();
     const hours = (returnTime - startTime) / (1000 * 60 * 60);
     const totalCost = parseFloat((hours * (rental === null || rental === void 0 ? void 0 : rental.bikeId.pricePerHour)).toFixed(2));
+    //start session for transaction & rollback
     const session = yield mongoose_1.default.startSession();
     try {
         session.startTransaction();
+        //transaction-1
         yield bike_model_1.Bike.findByIdAndUpdate(rental.bikeId, { isAvailable: true }, { session });
+        //transaction-2
         const result = yield rental_model_1.Rental.findByIdAndUpdate(id, {
             totalCost,
             isReturned: true,
@@ -85,6 +96,7 @@ const updateRentalIntoDB = (id) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.updateRentalIntoDB = updateRentalIntoDB;
 const getRentalFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    //check user is exists or not
     yield user_model_1.User.isValidUser(id);
     const result = yield rental_model_1.Rental.find({ userId: id });
     if (!result.length) {
