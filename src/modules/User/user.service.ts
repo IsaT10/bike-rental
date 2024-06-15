@@ -1,4 +1,3 @@
-import { JwtPayload } from 'jsonwebtoken';
 import { User } from './user.model';
 import { TUser } from './user.interface';
 

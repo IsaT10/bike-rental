@@ -35,7 +35,6 @@ const userLogin = async (payload: TLogin) => {
     isUserExists?.password
   );
 
-  console.log(isPasswordMatched);
   if (!isPasswordMatched) {
     throw new AppError(httpStatus.FORBIDDEN, 'Password does not matched');
   }
@@ -45,7 +44,7 @@ const userLogin = async (payload: TLogin) => {
     role: isUserExists.role,
   };
 
-  var accessToken = jwt.sign(jwtPayload, config.access_secret as string, {
+  const accessToken = jwt.sign(jwtPayload, config.access_secret as string, {
     expiresIn: config.access_expires,
   });
 
