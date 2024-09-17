@@ -130,5 +130,4 @@ Ensure you have the following installed on your machine:
    - `POST` : `/api/rentals`: Create a bike. (Authorization Bearer TOKEN)
    - `PUT` : `/api/rentals/:id/return`: Update a rental. (Authorization Bearer TOKEN) admin
 
-[Blog Bloom](https://bike-rental-pied.vercel.app/ 'Blog Bloom')
-https://blog-bloom.netlify.app/
+[XRiDES](https://bike-rental-pied.vercel.app/ 'XRiDES')
