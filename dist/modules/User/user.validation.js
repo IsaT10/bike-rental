@@ -4,9 +4,8 @@ exports.updateUserValidationSchema = exports.createUserValidationSchema = void 0
 const zod_1 = require("zod");
 const createUserValidationSchema = zod_1.z.object({
     body: zod_1.z.object({
-        name: zod_1.z
-            .string({ required_error: 'Name is required' })
-            .regex(/^[A-Z][a-zA-Z\s]*$/, 'Name must start with a capital letter.'),
+        name: zod_1.z.string({ required_error: 'Name is required' }),
+        // .regex(/^[A-Z][a-zA-Z\s]*$/, 'Name must start with a capital letter.')
         email: zod_1.z
             .string({ required_error: 'Email is required' })
             .email('Provide a valid email.'),
@@ -15,7 +14,7 @@ const createUserValidationSchema = zod_1.z.object({
             .min(8, 'Password can not be less than 8 character'),
         address: zod_1.z.string({ required_error: 'Address is required' }),
         phone: zod_1.z.string({ required_error: 'Phone number is required' }),
-        role: zod_1.z.string({ required_error: 'Role is required' }),
+        role: zod_1.z.string({ required_error: 'Role is required' }).optional(),
     }),
 });
 exports.createUserValidationSchema = createUserValidationSchema;

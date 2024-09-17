@@ -3,13 +3,13 @@ import { TBike } from './bike.interface';
 
 const BikeSchema = new Schema<TBike>(
   {
-    name: { type: String, required: true, trim: true },
+    image: { type: String, required: true },
     description: { type: String, required: true, trim: true },
     pricePerHour: { type: Number, required: true },
     isAvailable: { type: Boolean, default: true },
     cc: { type: Number, required: true },
     year: { type: Number, required: true },
-    model: { type: String, required: true },
+    model: { type: String, required: true, unique: true },
     brand: { type: String, required: true },
   },
   { versionKey: false }

@@ -12,20 +12,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteBikeFromDB = exports.updateBikeIntoDB = exports.getAllBikeFromDB = exports.createBikeIntoDB = void 0;
+exports.getSingleBikeFromDB = exports.deleteBikeFromDB = exports.updateBikeIntoDB = exports.getAllBikeFromDB = exports.createBikeIntoDB = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const appError_1 = __importDefault(require("../../error/appError"));
 const bike_model_1 = require("./bike.model");
+const QueryBuilder_1 = __importDefault(require("../../builder/QueryBuilder"));
 const createBikeIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield bike_model_1.Bike.create(payload);
     return result;
 });
 exports.createBikeIntoDB = createBikeIntoDB;
-const getAllBikeFromDB = () => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield bike_model_1.Bike.find();
+const getAllBikeFromDB = (query) => __awaiter(void 0, void 0, void 0, function* () {
+    const BikeSearchableFields = ['brand', 'model'];
+    const bikeQuery = new QueryBuilder_1.default(bike_model_1.Bike.find(), query)
+        .search(BikeSearchableFields)
+        .filter()
+        .sort()
+        // .pagination()
+        .fields();
+    const result = yield bikeQuery.queryModel;
     return result;
 });
 exports.getAllBikeFromDB = getAllBikeFromDB;
+const getSingleBikeFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield bike_model_1.Bike.findById(id);
+    return result;
+});
+exports.getSingleBikeFromDB = getSingleBikeFromDB;
 const updateBikeIntoDB = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield bike_model_1.Bike.findByIdAndUpdate(id, payload, {
         new: true,

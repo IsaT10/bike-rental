@@ -4,7 +4,6 @@ exports.updateBikeValidationSchema = exports.createBikeValidationSchema = void 0
 const zod_1 = require("zod");
 const createBikeValidationSchema = zod_1.z.object({
     body: zod_1.z.object({
-        name: zod_1.z.string({ required_error: 'Bike name is required' }),
         description: zod_1.z.string({ required_error: 'Description is required' }),
         pricePerHour: zod_1.z.number({ required_error: 'Price per hour is required' }),
         cc: zod_1.z.number({ required_error: 'Cc is required' }),
@@ -16,7 +15,6 @@ const createBikeValidationSchema = zod_1.z.object({
 exports.createBikeValidationSchema = createBikeValidationSchema;
 const updateBikeValidationSchema = zod_1.z.object({
     body: zod_1.z.object({
-        name: zod_1.z.string().optional(),
         description: zod_1.z.string().optional(),
         pricePerHour: zod_1.z.number().optional(),
         cc: zod_1.z.number().optional(),

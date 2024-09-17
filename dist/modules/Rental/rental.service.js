@@ -12,13 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRentalFromDB = exports.updateRentalIntoDB = exports.createRentalIntoDB = void 0;
+exports.changePaymentStatusFromDB = exports.getAllRentalFromDB = exports.getRentalFromDB = exports.updateRentalIntoDB = exports.createRentalIntoDB = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const appError_1 = __importDefault(require("../../error/appError"));
 const bike_model_1 = require("../Bike/bike.model");
 const user_model_1 = require("../User/user.model");
 const rental_model_1 = require("./rental.model");
 const mongoose_1 = __importDefault(require("mongoose"));
+const QueryBuilder_1 = __importDefault(require("../../builder/QueryBuilder"));
 const createRentalIntoDB = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
     const bike = yield bike_model_1.Bike.findById(payload.bikeId);
     //check is bike exists
@@ -27,7 +28,7 @@ const createRentalIntoDB = (id, payload) => __awaiter(void 0, void 0, void 0, fu
     }
     // check is bike available for rent
     if (!bike.isAvailable) {
-        throw new appError_1.default(http_status_1.default.NOT_FOUND, 'This bike is already busy with another tourist. Choose another bike!');
+        throw new appError_1.default(http_status_1.default.NOT_FOUND, 'Choose another bike!');
     }
     //check user is valid or not
     yield user_model_1.User.isValidUser(id);
@@ -77,11 +78,24 @@ const updateRentalIntoDB = (id) => __awaiter(void 0, void 0, void 0, function* (
         //transaction-1
         yield bike_model_1.Bike.findByIdAndUpdate(rental.bikeId, { isAvailable: true }, { session });
         //transaction-2
-        const result = yield rental_model_1.Rental.findByIdAndUpdate(id, {
-            totalCost,
-            isReturned: true,
-            returnTime,
-        }, { new: true, session });
+        let result;
+        if (totalCost < 100) {
+            result = yield rental_model_1.Rental.findByIdAndUpdate(id, {
+                totalCost,
+                isReturned: true,
+                isRental: false,
+                isPaid: true,
+                returnTime,
+            }, { new: true, session });
+        }
+        else if (totalCost > 100) {
+            result = yield rental_model_1.Rental.findByIdAndUpdate(id, {
+                totalCost,
+                isReturned: true,
+                isRental: false,
+                returnTime,
+            }, { new: true, session });
+        }
         yield session.commitTransaction();
         yield session.endSession();
         return result;
@@ -95,13 +109,38 @@ const updateRentalIntoDB = (id) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.updateRentalIntoDB = updateRentalIntoDB;
-const getRentalFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
+const getRentalFromDB = (id, query) => __awaiter(void 0, void 0, void 0, function* () {
     //check user is exists or not
     yield user_model_1.User.isValidUser(id);
-    const result = yield rental_model_1.Rental.find({ userId: id });
+    const rentalQuery = new QueryBuilder_1.default(rental_model_1.Rental.find({ userId: id }), query)
+        .search([])
+        .filter()
+        .sort()
+        .pagination()
+        .fields();
+    const result = yield rentalQuery.queryModel;
     if (!result.length) {
-        throw new appError_1.default(http_status_1.default.NOT_FOUND, 'No Data Found');
+        throw new appError_1.default(http_status_1.default.NOT_FOUND, 'No Data Found ');
     }
     return result;
 });
 exports.getRentalFromDB = getRentalFromDB;
+const getAllRentalFromDB = (query) => __awaiter(void 0, void 0, void 0, function* () {
+    const rentalQuery = new QueryBuilder_1.default(rental_model_1.Rental.find(), query)
+        .search([])
+        .filter()
+        .sort()
+        .pagination()
+        .fields();
+    const result = yield rentalQuery.queryModel;
+    return result;
+});
+exports.getAllRentalFromDB = getAllRentalFromDB;
+const changePaymentStatusFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield rental_model_1.Rental.findByIdAndUpdate(id, { isPaid: true }, { new: true });
+    if (!result) {
+        throw new appError_1.default(http_status_1.default.NOT_FOUND, 'Not found!');
+    }
+    return result;
+});
+exports.changePaymentStatusFromDB = changePaymentStatusFromDB;

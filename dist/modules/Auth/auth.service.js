@@ -33,8 +33,10 @@ const userSignUp = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     //hash normal passwod
     const hashPassword = yield user_model_1.User.hashPassword(payload.password);
     payload.password = hashPassword;
-    const result = yield user_model_1.User.create(payload);
-    const _a = result.toObject(), { password } = _a, userWithoutPassword = __rest(_a, ["password"]);
+    const result = yield user_model_1.User.create(Object.assign({ role: 'user' }, payload));
+    const userWithoutPassword = yield user_model_1.User.findById(result._id)
+        .select('-password')
+        .lean();
     return userWithoutPassword;
 });
 exports.userSignUp = userSignUp;
@@ -44,7 +46,7 @@ const userLogin = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     if (!isUserExists) {
         throw new appError_1.default(http_status_1.default.NOT_FOUND, 'User not found');
     }
-    const _b = isUserExists.toObject(), { password } = _b, user = __rest(_b, ["password"]);
+    const _a = isUserExists.toObject(), { password } = _a, user = __rest(_a, ["password"]);
     const isPasswordMatched = yield user_model_1.User.isPasswordMatched(payload.password, isUserExists === null || isUserExists === void 0 ? void 0 : isUserExists.password);
     //check is password matched with hash password
     if (!isPasswordMatched) {

@@ -8,7 +8,7 @@ const RentalSchema = new Schema<TRental>(
       ref: 'User',
       required: true,
     },
-    
+
     bikeId: {
       type: Schema.Types.ObjectId,
       ref: 'Bike',
@@ -18,6 +18,9 @@ const RentalSchema = new Schema<TRental>(
     returnTime: { type: Date, default: null },
     totalCost: { type: Number, default: 0 },
     isReturned: { type: Boolean, default: false },
+    isPaid: { type: Boolean, default: false },
+    isRental: { type: Boolean, default: true },
+    advancedPayment: { type: Number, default: 100 },
   },
   { versionKey: false }
 );

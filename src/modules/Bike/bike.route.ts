@@ -4,6 +4,7 @@ import {
   createBike,
   deleteBike,
   getAllBike,
+  getSingleBike,
   updateBike,
 } from './bike.controller';
 import validateRequest from '../../middleware/validateRequest';
@@ -22,6 +23,7 @@ router.post(
 );
 
 router.get('/', getAllBike);
+router.get('/:id', getSingleBike);
 
 router.put(
   '/:id',

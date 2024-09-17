@@ -6,6 +6,7 @@ import { User } from '../User/user.model';
 import { TRental } from './rental.interface';
 import { Rental } from './rental.model';
 import mongoose from 'mongoose';
+import QueryBuilder from '../../builder/QueryBuilder';
 
 const createRentalIntoDB = async (id: string, payload: Partial<TRental>) => {
   const bike = await Bike.findById(payload.bikeId);
@@ -19,11 +20,9 @@ const createRentalIntoDB = async (id: string, payload: Partial<TRental>) => {
   }
 
   // check is bike available for rent
+
   if (!bike.isAvailable) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      'This bike is already busy with another tourist. Choose another bike!'
-    );
+    throw new AppError(httpStatus.NOT_FOUND, 'Choose another bike!');
   }
 
   //check user is valid or not
@@ -102,15 +101,35 @@ const updateRentalIntoDB = async (id: string) => {
     );
 
     //transaction-2
-    const result = await Rental.findByIdAndUpdate(
-      id,
-      {
-        totalCost,
-        isReturned: true,
-        returnTime,
-      },
-      { new: true, session }
-    );
+
+    let result;
+
+    if (totalCost < 100) {
+      result = await Rental.findByIdAndUpdate(
+        id,
+        {
+          totalCost,
+          isReturned: true,
+          isRental: false,
+          isPaid: true,
+
+          returnTime,
+        },
+        { new: true, session }
+      );
+    } else if (totalCost > 100) {
+      result = await Rental.findByIdAndUpdate(
+        id,
+        {
+          totalCost,
+          isReturned: true,
+          isRental: false,
+
+          returnTime,
+        },
+        { new: true, session }
+      );
+    }
 
     await session.commitTransaction();
     await session.endSession();
@@ -129,17 +148,56 @@ const updateRentalIntoDB = async (id: string) => {
   }
 };
 
-const getRentalFromDB = async (id: string) => {
+const getRentalFromDB = async (id: string, query: Record<string, unknown>) => {
   //check user is exists or not
   await User.isValidUser(id);
 
-  const result = await Rental.find({ userId: id });
+  const rentalQuery = new QueryBuilder(Rental.find({ userId: id }), query)
+    .search([])
+    .filter()
+    .sort()
+    .pagination()
+    .fields();
+
+  const result = await rentalQuery.queryModel;
 
   if (!result.length) {
-    throw new AppError(httpStatus.NOT_FOUND, 'No Data Found');
+    throw new AppError(httpStatus.NOT_FOUND, 'No Data Found ');
   }
 
   return result;
 };
 
-export { createRentalIntoDB, updateRentalIntoDB, getRentalFromDB };
+const getAllRentalFromDB = async (query: Record<string, unknown>) => {
+  const rentalQuery = new QueryBuilder(Rental.find(), query)
+    .search([])
+    .filter()
+    .sort()
+    .pagination()
+    .fields();
+
+  const result = await rentalQuery.queryModel;
+
+  return result;
+};
+const changePaymentStatusFromDB = async (id: string) => {
+  const result = await Rental.findByIdAndUpdate(
+    id,
+    { isPaid: true },
+    { new: true }
+  );
+
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Not found!');
+  }
+
+  return result;
+};
+
+export {
+  createRentalIntoDB,
+  updateRentalIntoDB,
+  getRentalFromDB,
+  getAllRentalFromDB,
+  changePaymentStatusFromDB,
+};

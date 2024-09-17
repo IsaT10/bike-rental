@@ -30,6 +30,16 @@ UserSchema.statics.hashPassword = async function (plainPassword: string) {
   return hashPassword;
 };
 
+UserSchema.pre('save', async function (next) {
+  const isUserExist = await User.findOne({ email: this.email });
+
+  if (isUserExist) {
+    throw new AppError(httpStatus.BAD_REQUEST, `Use another email.`);
+  }
+
+  next();
+});
+
 //check password matched
 UserSchema.statics.isPasswordMatched = async function (
   plainPassword: string,

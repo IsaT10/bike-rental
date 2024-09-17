@@ -6,6 +6,7 @@ import {
   createBikeIntoDB,
   deleteBikeFromDB,
   getAllBikeFromDB,
+  getSingleBikeFromDB,
   updateBikeIntoDB,
 } from './bike.service';
 
@@ -21,12 +22,24 @@ const createBike = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllBike = catchAsync(async (req: Request, res: Response) => {
-  const data = await getAllBikeFromDB();
+  const data = await getAllBikeFromDB(req.query);
 
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: 'Bikes retrived successfully',
+    data,
+  });
+});
+
+const getSingleBike = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const data = await getSingleBikeFromDB(id);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Bike retrived successfully',
     data,
   });
 });
@@ -55,4 +68,4 @@ const deleteBike = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export { createBike, getAllBike, updateBike, deleteBike };
+export { createBike, getAllBike, updateBike, deleteBike, getSingleBike };

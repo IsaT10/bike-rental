@@ -36,6 +36,15 @@ UserSchema.statics.hashPassword = function (plainPassword) {
         return hashPassword;
     });
 };
+UserSchema.pre('save', function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const isUserExist = yield exports.User.findOne({ email: this.email });
+        if (isUserExist) {
+            throw new appError_1.default(http_status_1.default.BAD_REQUEST, `Use another email.`);
+        }
+        next();
+    });
+});
 //check password matched
 UserSchema.statics.isPasswordMatched = function (plainPassword, hashPassword) {
     return __awaiter(this, void 0, void 0, function* () {

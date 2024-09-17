@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRentals = exports.upadteRental = exports.createRental = void 0;
+exports.changePaymentStatus = exports.getAllRentals = exports.getRentals = exports.upadteRental = exports.createRental = void 0;
 const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const http_status_1 = __importDefault(require("http-status"));
@@ -41,7 +41,7 @@ const upadteRental = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
 exports.upadteRental = upadteRental;
 const getRentals = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.user;
-    const data = yield (0, rental_service_1.getRentalFromDB)(id);
+    const data = yield (0, rental_service_1.getRentalFromDB)(id, req.query);
     (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: http_status_1.default.OK,
@@ -50,3 +50,24 @@ const getRentals = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
     });
 }));
 exports.getRentals = getRentals;
+const getAllRentals = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const data = yield (0, rental_service_1.getAllRentalFromDB)(req.query);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: 'Rentals retrieved successfully',
+        data,
+    });
+}));
+exports.getAllRentals = getAllRentals;
+const changePaymentStatus = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const data = yield (0, rental_service_1.changePaymentStatusFromDB)(id);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: 'Payment complete!',
+        data,
+    });
+}));
+exports.changePaymentStatus = changePaymentStatus;

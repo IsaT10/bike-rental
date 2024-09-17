@@ -6,15 +6,17 @@ import { User } from '../User/user.model';
 import { TLogin } from './auth.interface';
 import config from '../../config';
 
-const userSignUp = async (payload: TUser) => {
+const userSignUp = async (payload: Omit<TUser, 'role'>) => {
   //hash normal passwod
   const hashPassword = await User.hashPassword(payload.password);
 
   payload.password = hashPassword;
 
-  const result = await User.create(payload);
+  const result = await User.create({ role: 'user', ...payload });
 
-  const { password, ...userWithoutPassword } = result.toObject();
+  const userWithoutPassword = await User.findById(result._id)
+    .select('-password')
+    .lean();
 
   return userWithoutPassword;
 };

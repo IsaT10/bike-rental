@@ -8,7 +8,7 @@ export interface TUser {
   address: string;
   role: 'admin' | 'user';
 }
-//create some statics methods
+
 export interface UserModel extends Model<TUser> {
   hashPassword: (plainPassword: string) => Promise<string>;
   isValidUser: (id: string) => Promise<TUser>;

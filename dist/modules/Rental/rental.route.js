@@ -7,4 +7,6 @@ const router = (0, express_1.Router)();
 router.post('/', (0, auth_1.auth)('admin', 'user'), rental_controller_1.createRental);
 router.put('/:id/return', (0, auth_1.auth)('admin'), rental_controller_1.upadteRental);
 router.get('/', (0, auth_1.auth)('admin', 'user'), rental_controller_1.getRentals);
+router.get('/all', (0, auth_1.auth)('admin'), rental_controller_1.getAllRentals);
+router.patch('/:id', (0, auth_1.auth)('admin', 'user'), rental_controller_1.changePaymentStatus);
 exports.default = router;

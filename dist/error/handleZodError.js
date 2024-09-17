@@ -13,3 +13,23 @@ const handelZodError = (err) => {
     return new appError_1.default(http_status_1.default.BAD_REQUEST, message);
 };
 exports.default = handelZodError;
+// import { ZodError, ZodIssue } from 'zod';
+// import {
+//   TErrorSource,
+//   TGenericErrorResponse,
+// } from '../middleware/globalErrorHandler';
+// const handleZodError = (err: ZodError): TGenericErrorResponse => {
+//   const errorMessages: TErrorSource = err.issues.map((issue: ZodIssue) => {
+//     return {
+//       path: issue?.path[issue.path.length - 1],
+//       message: issue?.message,
+//     };
+//   });
+//   const statusCode = 400;
+//   return {
+//     statusCode,
+//     message: 'Validation Error',
+//     errorMessages,
+//   };
+// };
+// export default handleZodError;

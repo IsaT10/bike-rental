@@ -17,5 +17,8 @@ const RentalSchema = new mongoose_1.Schema({
     returnTime: { type: Date, default: null },
     totalCost: { type: Number, default: 0 },
     isReturned: { type: Boolean, default: false },
+    isPaid: { type: Boolean, default: false },
+    isRental: { type: Boolean, default: true },
+    advancedPayment: { type: Number, default: 100 },
 }, { versionKey: false });
 exports.Rental = (0, mongoose_1.model)('Rental', RentalSchema);

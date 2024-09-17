@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getProfile = exports.updateProfile = void 0;
+exports.roleChange = exports.deleteUser = exports.getUsers = exports.getProfile = exports.updateProfile = void 0;
 const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const http_status_1 = __importDefault(require("http-status"));
@@ -28,6 +28,38 @@ const getProfile = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
     });
 }));
 exports.getProfile = getProfile;
+const getUsers = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const data = yield (0, user_service_1.getAllUserFromDB)(req.query);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: 'Users retrieved successfully',
+        data,
+    });
+}));
+exports.getUsers = getUsers;
+const deleteUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const data = yield (0, user_service_1.deleteUserFromDB)(id);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: 'User deleted successfully',
+        data,
+    });
+}));
+exports.deleteUser = deleteUser;
+const roleChange = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const data = yield (0, user_service_1.roleChangeUser)(id);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: 'Role changed successfully',
+        data,
+    });
+}));
+exports.roleChange = roleChange;
 const updateProfile = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.user;
     const data = yield (0, user_service_1.updateProfileIntoDB)(id, req.body);
