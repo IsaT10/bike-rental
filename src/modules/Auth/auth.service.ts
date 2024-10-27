@@ -1,24 +1,32 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from 'http-status';
-import jwt from 'jsonwebtoken';
 import AppError from '../../error/appError';
 import { TUser } from '../User/user.interface';
 import { User } from '../User/user.model';
 import { TLogin } from './auth.interface';
 import config from '../../config';
+import { createToken } from './auth.utils';
 
-const userSignUp = async (payload: Omit<TUser, 'role'>) => {
-  //hash normal passwod
+const userSignUp = async (payload: TUser, file?: any) => {
   const hashPassword = await User.hashPassword(payload.password);
 
   payload.password = hashPassword;
 
-  const result = await User.create({ role: 'user', ...payload });
+  const result = await User.create({ ...payload, image: file?.path });
 
-  const userWithoutPassword = await User.findById(result._id)
-    .select('-password')
-    .lean();
+  const jwtPayload = {
+    id: result?._id,
+    role: result?.role,
+  };
 
-  return userWithoutPassword;
+  // create access token
+  const accessToken = createToken(
+    jwtPayload,
+    config.access_secret as string,
+    config.access_expires as string
+  );
+
+  return { accessToken };
 };
 
 const userLogin = async (payload: TLogin) => {
@@ -30,8 +38,6 @@ const userLogin = async (payload: TLogin) => {
   if (!isUserExists) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');
   }
-
-  const { password, ...user } = isUserExists.toObject();
 
   const isPasswordMatched = await User.isPasswordMatched(
     payload.password,
@@ -49,11 +55,33 @@ const userLogin = async (payload: TLogin) => {
   };
 
   // create access token
-  const accessToken = jwt.sign(jwtPayload, config.access_secret as string, {
-    expiresIn: config.access_expires,
-  });
+  const accessToken = createToken(
+    jwtPayload,
+    config.access_secret as string,
+    config.access_expires as string
+  );
 
-  return { user, accessToken };
+  return { accessToken };
 };
 
-export { userSignUp, userLogin };
+const googleLoginDataInDB = async (payload: Partial<TUser>) => {
+  const { email, name, image } = payload;
+  if (!email) throw new AppError(httpStatus.BAD_REQUEST, 'Google login failed');
+
+  let user = await User.findOne({ email });
+  if (!user) {
+    user = await User.create({ email, name, image });
+  }
+
+  // Generate JWT
+  const jwtPayload = { id: user._id, role: user.role };
+  const accessToken = createToken(
+    jwtPayload,
+    config.access_secret as string,
+    config.access_expires as string
+  );
+
+  return { accessToken };
+};
+
+export { userSignUp, userLogin, googleLoginDataInDB };

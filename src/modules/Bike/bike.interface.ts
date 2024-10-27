@@ -1,4 +1,5 @@
 export interface TBike {
+  _id?: string;
   description: string;
   pricePerHour: number;
   isAvailable: boolean;

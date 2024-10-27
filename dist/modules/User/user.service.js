@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteUserFromDB = exports.roleChangeUser = exports.getAllUserFromDB = exports.getProfileFromDB = exports.updateProfileIntoDB = void 0;
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const user_model_1 = require("./user.model");
 const QueryBuilder_1 = __importDefault(require("../../builder/QueryBuilder"));
 const getProfileFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
@@ -44,14 +45,14 @@ const getAllUserFromDB = (query) => __awaiter(void 0, void 0, void 0, function* 
     return result;
 });
 exports.getAllUserFromDB = getAllUserFromDB;
-const updateProfileIntoDB = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+const updateProfileIntoDB = (id, payload, file) => __awaiter(void 0, void 0, void 0, function* () {
     if (payload.password) {
         payload.password = yield user_model_1.User.hashPassword(payload.password);
     }
+    const userData = Object.assign(Object.assign({}, payload), { image: file === null || file === void 0 ? void 0 : file.path });
     //update profile
-    const result = yield user_model_1.User.findByIdAndUpdate(id, payload, {
+    const result = yield user_model_1.User.findByIdAndUpdate(id, userData, {
         new: true,
-        runValidators: true,
     }).select('-updatedAt -createdAt -__v');
     return result;
 });

@@ -8,36 +8,28 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userLogin = exports.userSignUp = void 0;
+exports.googleLoginDataInDB = exports.userLogin = exports.userSignUp = void 0;
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const http_status_1 = __importDefault(require("http-status"));
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const appError_1 = __importDefault(require("../../error/appError"));
 const user_model_1 = require("../User/user.model");
 const config_1 = __importDefault(require("../../config"));
-const userSignUp = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    //hash normal passwod
+const auth_utils_1 = require("./auth.utils");
+const userSignUp = (payload, file) => __awaiter(void 0, void 0, void 0, function* () {
     const hashPassword = yield user_model_1.User.hashPassword(payload.password);
     payload.password = hashPassword;
-    const result = yield user_model_1.User.create(Object.assign({ role: 'user' }, payload));
-    const userWithoutPassword = yield user_model_1.User.findById(result._id)
-        .select('-password')
-        .lean();
-    return userWithoutPassword;
+    const result = yield user_model_1.User.create(Object.assign(Object.assign({}, payload), { image: file === null || file === void 0 ? void 0 : file.path }));
+    const jwtPayload = {
+        id: result === null || result === void 0 ? void 0 : result._id,
+        role: result === null || result === void 0 ? void 0 : result.role,
+    };
+    // create access token
+    const accessToken = (0, auth_utils_1.createToken)(jwtPayload, config_1.default.access_secret, config_1.default.access_expires);
+    return { accessToken };
 });
 exports.userSignUp = userSignUp;
 const userLogin = (payload) => __awaiter(void 0, void 0, void 0, function* () {
@@ -46,7 +38,6 @@ const userLogin = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     if (!isUserExists) {
         throw new appError_1.default(http_status_1.default.NOT_FOUND, 'User not found');
     }
-    const _a = isUserExists.toObject(), { password } = _a, user = __rest(_a, ["password"]);
     const isPasswordMatched = yield user_model_1.User.isPasswordMatched(payload.password, isUserExists === null || isUserExists === void 0 ? void 0 : isUserExists.password);
     //check is password matched with hash password
     if (!isPasswordMatched) {
@@ -57,9 +48,21 @@ const userLogin = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         role: isUserExists.role,
     };
     // create access token
-    const accessToken = jsonwebtoken_1.default.sign(jwtPayload, config_1.default.access_secret, {
-        expiresIn: config_1.default.access_expires,
-    });
-    return { user, accessToken };
+    const accessToken = (0, auth_utils_1.createToken)(jwtPayload, config_1.default.access_secret, config_1.default.access_expires);
+    return { accessToken };
 });
 exports.userLogin = userLogin;
+const googleLoginDataInDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email, name, image } = payload;
+    if (!email)
+        throw new appError_1.default(http_status_1.default.BAD_REQUEST, 'Google login failed');
+    let user = yield user_model_1.User.findOne({ email });
+    if (!user) {
+        user = yield user_model_1.User.create({ email, name, image });
+    }
+    // Generate JWT
+    const jwtPayload = { id: user._id, role: user.role };
+    const accessToken = (0, auth_utils_1.createToken)(jwtPayload, config_1.default.access_secret, config_1.default.access_expires);
+    return { accessToken };
+});
+exports.googleLoginDataInDB = googleLoginDataInDB;

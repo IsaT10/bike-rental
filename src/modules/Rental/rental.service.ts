@@ -74,6 +74,7 @@ const updateRentalIntoDB = async (id: string) => {
     'bikeId'
   );
 
+  console.log({ rental });
   //check rental is exists
   if (!rental) {
     throw new AppError(httpStatus.NOT_FOUND, 'No Data Found');
@@ -94,11 +95,13 @@ const updateRentalIntoDB = async (id: string) => {
     session.startTransaction();
 
     //transaction-1
-    await Bike.findByIdAndUpdate(
-      rental.bikeId,
+    const bikeStatus = await Bike.findByIdAndUpdate(
+      rental.bikeId._id,
       { isAvailable: true },
       { session }
     );
+
+    console.log({ bikeStatus });
 
     //transaction-2
 
@@ -161,10 +164,6 @@ const getRentalFromDB = async (id: string, query: Record<string, unknown>) => {
 
   const result = await rentalQuery.queryModel;
 
-  if (!result.length) {
-    throw new AppError(httpStatus.NOT_FOUND, 'No Data Found ');
-  }
-
   return result;
 };
 
@@ -184,12 +183,18 @@ const changePaymentStatusFromDB = async (id: string) => {
   const result = await Rental.findByIdAndUpdate(
     id,
     { isPaid: true },
+
     { new: true }
   );
 
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, 'Not found!');
   }
+  // await Bike.findByIdAndUpdate(
+  //   result.bikeId,
+  //   { isAvailable: true },
+  //   { new: true }
+  // );
 
   return result;
 };

@@ -24,10 +24,15 @@ const UserSchema = new mongoose_1.Schema({
         required: true,
         unique: true,
     },
-    password: { type: String, required: true, select: 0 },
-    role: { type: String, enum: ['admin', 'user'], required: true },
-    address: { type: String, required: true },
-    phone: { type: String, required: true },
+    image: { type: String },
+    password: { type: String, select: 0 },
+    role: {
+        type: String,
+        enum: ['admin', 'user'],
+        default: 'user',
+    },
+    address: { type: String },
+    phone: { type: String },
 }, { timestamps: true });
 // hash normal password
 UserSchema.statics.hashPassword = function (plainPassword) {
@@ -40,7 +45,7 @@ UserSchema.pre('save', function (next) {
     return __awaiter(this, void 0, void 0, function* () {
         const isUserExist = yield exports.User.findOne({ email: this.email });
         if (isUserExist) {
-            throw new appError_1.default(http_status_1.default.BAD_REQUEST, `Use another email.`);
+            throw new appError_1.default(http_status_1.default.BAD_REQUEST, `User already exist.`);
         }
         next();
     });

@@ -1,30 +1,39 @@
 import { Request, Response } from 'express';
 import catchAsync from '../../utils/catchAsync';
-import { userLogin, userSignUp } from './auth.service';
+import { googleLoginDataInDB, userLogin, userSignUp } from './auth.service';
 import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status';
 
 const signUp = catchAsync(async (req: Request, res: Response) => {
-  const data = await userSignUp(req.body);
+  const { accessToken } = await userSignUp(req.body, req?.file);
 
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
     message: 'User registered successfully',
-    data,
+    data: { accessToken },
   });
 });
 
 const login = catchAsync(async (req: Request, res: Response) => {
-  const { user, accessToken } = await userLogin(req.body);
+  const { accessToken } = await userLogin(req.body);
 
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: 'User logged in successfully',
-    token: accessToken,
-    data: user,
+    data: { accessToken },
+  });
+});
+const googleLogin = catchAsync(async (req: Request, res: Response) => {
+  const { accessToken } = await googleLoginDataInDB(req.body);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'User logged in successfully',
+    data: { accessToken },
   });
 });
 
-export { signUp, login };
+export { signUp, login, googleLogin };

@@ -62,6 +62,7 @@ const createRentalIntoDB = (id, payload) => __awaiter(void 0, void 0, void 0, fu
 exports.createRentalIntoDB = createRentalIntoDB;
 const updateRentalIntoDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const rental = yield rental_model_1.Rental.findById(id).populate('bikeId');
+    console.log({ rental });
     //check rental is exists
     if (!rental) {
         throw new appError_1.default(http_status_1.default.NOT_FOUND, 'No Data Found');
@@ -76,7 +77,8 @@ const updateRentalIntoDB = (id) => __awaiter(void 0, void 0, void 0, function* (
     try {
         session.startTransaction();
         //transaction-1
-        yield bike_model_1.Bike.findByIdAndUpdate(rental.bikeId, { isAvailable: true }, { session });
+        const bikeStatus = yield bike_model_1.Bike.findByIdAndUpdate(rental.bikeId._id, { isAvailable: true }, { session });
+        console.log({ bikeStatus });
         //transaction-2
         let result;
         if (totalCost < 100) {
@@ -119,9 +121,6 @@ const getRentalFromDB = (id, query) => __awaiter(void 0, void 0, void 0, functio
         .pagination()
         .fields();
     const result = yield rentalQuery.queryModel;
-    if (!result.length) {
-        throw new appError_1.default(http_status_1.default.NOT_FOUND, 'No Data Found ');
-    }
     return result;
 });
 exports.getRentalFromDB = getRentalFromDB;
@@ -141,6 +140,11 @@ const changePaymentStatusFromDB = (id) => __awaiter(void 0, void 0, void 0, func
     if (!result) {
         throw new appError_1.default(http_status_1.default.NOT_FOUND, 'Not found!');
     }
+    // await Bike.findByIdAndUpdate(
+    //   result.bikeId,
+    //   { isAvailable: true },
+    //   { new: true }
+    // );
     return result;
 });
 exports.changePaymentStatusFromDB = changePaymentStatusFromDB;

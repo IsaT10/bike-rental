@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 import {
   deleteUser,
   getProfile,
@@ -9,6 +9,7 @@ import {
 import { auth } from '../../middleware/auth';
 import validateRequest from '../../middleware/validateRequest';
 import { updateUserValidationSchema } from './user.validation';
+import { multerUpload } from '../../config/multer.config';
 
 const router = Router();
 
@@ -21,6 +22,11 @@ router.delete('/:id', auth('admin'), deleteUser);
 router.put(
   '/me',
   auth('admin', 'user'),
+  multerUpload.single('image'),
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = JSON.parse(req.body.data);
+    next();
+  },
   validateRequest(updateUserValidationSchema),
   updateProfile
 );

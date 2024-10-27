@@ -12,29 +12,38 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.login = exports.signUp = void 0;
+exports.googleLogin = exports.login = exports.signUp = void 0;
 const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const auth_service_1 = require("./auth.service");
 const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const http_status_1 = __importDefault(require("http-status"));
 const signUp = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const data = yield (0, auth_service_1.userSignUp)(req.body);
+    const { accessToken } = yield (0, auth_service_1.userSignUp)(req.body, req === null || req === void 0 ? void 0 : req.file);
     (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: http_status_1.default.CREATED,
         message: 'User registered successfully',
-        data,
+        data: { accessToken },
     });
 }));
 exports.signUp = signUp;
 const login = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { user, accessToken } = yield (0, auth_service_1.userLogin)(req.body);
+    const { accessToken } = yield (0, auth_service_1.userLogin)(req.body);
     (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: http_status_1.default.OK,
         message: 'User logged in successfully',
-        token: accessToken,
-        data: user,
+        data: { accessToken },
     });
 }));
 exports.login = login;
+const googleLogin = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { accessToken } = yield (0, auth_service_1.googleLoginDataInDB)(req.body);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: 'User logged in successfully',
+        data: { accessToken },
+    });
+}));
+exports.googleLogin = googleLogin;

@@ -62,7 +62,7 @@ const roleChange = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
 exports.roleChange = roleChange;
 const updateProfile = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.user;
-    const data = yield (0, user_service_1.updateProfileIntoDB)(id, req.body);
+    const data = yield (0, user_service_1.updateProfileIntoDB)(id, req.body, req === null || req === void 0 ? void 0 : req.file);
     (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: http_status_1.default.OK,

@@ -60,7 +60,8 @@ const roleChange = catchAsync(async (req: Request, res: Response) => {
 
 const updateProfile = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.user;
-  const data = await updateProfileIntoDB(id, req.body);
+
+  const data = await updateProfileIntoDB(id, req.body, req?.file);
 
   sendResponse(res, {
     success: true,

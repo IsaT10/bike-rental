@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { User } from './user.model';
 import { TUser } from './user.interface';
 import QueryBuilder from '../../builder/QueryBuilder';
@@ -40,15 +41,20 @@ const getAllUserFromDB = async (query: Record<string, unknown>) => {
   return result;
 };
 
-const updateProfileIntoDB = async (id: string, payload: Partial<TUser>) => {
+const updateProfileIntoDB = async (
+  id: string,
+  payload: Partial<TUser>,
+  file: any
+) => {
   if (payload.password) {
     payload.password = await User.hashPassword(payload.password);
   }
 
+  const userData = { ...payload, image: file?.path };
+
   //update profile
-  const result = await User.findByIdAndUpdate(id, payload, {
+  const result = await User.findByIdAndUpdate(id, userData, {
     new: true,
-    runValidators: true,
   }).select('-updatedAt -createdAt -__v');
 
   return result;

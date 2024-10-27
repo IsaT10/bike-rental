@@ -12,10 +12,15 @@ const UserSchema = new Schema<TUser, UserModel>(
       required: true,
       unique: true,
     },
-    password: { type: String, required: true, select: 0 },
-    role: { type: String, enum: ['admin', 'user'], required: true },
-    address: { type: String, required: true },
-    phone: { type: String, required: true },
+    image: { type: String },
+    password: { type: String, select: 0 },
+    role: {
+      type: String,
+      enum: ['admin', 'user'],
+      default: 'user',
+    },
+    address: { type: String },
+    phone: { type: String },
   },
   { timestamps: true }
 );
@@ -34,7 +39,7 @@ UserSchema.pre('save', async function (next) {
   const isUserExist = await User.findOne({ email: this.email });
 
   if (isUserExist) {
-    throw new AppError(httpStatus.BAD_REQUEST, `Use another email.`);
+    throw new AppError(httpStatus.BAD_REQUEST, `User already exist.`);
   }
 
   next();
