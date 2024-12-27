@@ -11,5 +11,14 @@ const BikeSchema = new mongoose_1.Schema({
     year: { type: Number, required: true },
     model: { type: String, required: true, unique: true },
     brand: { type: String, required: true },
-}, { versionKey: false });
+}, {
+    versionKey: false,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+});
+BikeSchema.virtual('reviews', {
+    ref: 'Review',
+    foreignField: 'bikeId',
+    localField: '_id',
+});
 exports.Bike = (0, mongoose_1.model)('Bike', BikeSchema);

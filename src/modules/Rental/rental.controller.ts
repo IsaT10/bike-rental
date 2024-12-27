@@ -37,6 +37,7 @@ const upadteRental = catchAsync(async (req: Request, res: Response) => {
 
 const getRentals = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.user;
+
   const data = await getRentalFromDB(id, req.query);
 
   sendResponse(res, {

@@ -13,7 +13,13 @@ const createBikeIntoDB = async (payload: TBike) => {
 const getAllBikeFromDB = async (query: Record<string, unknown>) => {
   const BikeSearchableFields = ['brand', 'model'];
 
-  const bikeQuery = new QueryBuilder(Bike.find(), query)
+  const bikeQuery = new QueryBuilder(
+    Bike.find().populate({
+      path: 'reviews',
+      select: 'rating',
+    }),
+    query
+  )
     .search(BikeSearchableFields)
     .filter()
     .sort()
@@ -26,7 +32,10 @@ const getAllBikeFromDB = async (query: Record<string, unknown>) => {
 };
 
 const getSingleBikeFromDB = async (id: string) => {
-  const result = await Bike.findById(id);
+  const result = await Bike.findById(id).populate({
+    path: 'reviews',
+    populate: { path: 'userId', select: 'name image' },
+  });
 
   return result;
 };

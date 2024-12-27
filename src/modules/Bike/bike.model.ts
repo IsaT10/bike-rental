@@ -12,7 +12,17 @@ const BikeSchema = new Schema<TBike>(
     model: { type: String, required: true, unique: true },
     brand: { type: String, required: true },
   },
-  { versionKey: false }
+  {
+    versionKey: false,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
 );
+
+BikeSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'bikeId',
+  localField: '_id',
+});
 
 export const Bike = model<TBike>('Bike', BikeSchema);

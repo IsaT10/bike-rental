@@ -4,6 +4,7 @@ import authRoute from '../modules/Auth/auth.route';
 import bikeRoute from '../modules/Bike/bike.route';
 import rentalRoute from '../modules/Rental/rental.route';
 import couponRoute from '../modules/Coupon/coupon.route';
+import reviewRoute from '../modules/review/review.route';
 
 const router = Router();
 const moduleRoutes = [
@@ -12,6 +13,7 @@ const moduleRoutes = [
   { path: '/auth', route: authRoute },
   { path: '/rentals', route: rentalRoute },
   { path: '/coupons', route: couponRoute },
+  { path: '/reviews', route: reviewRoute },
 ];
 
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

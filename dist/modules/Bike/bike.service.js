@@ -24,7 +24,10 @@ const createBikeIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function
 exports.createBikeIntoDB = createBikeIntoDB;
 const getAllBikeFromDB = (query) => __awaiter(void 0, void 0, void 0, function* () {
     const BikeSearchableFields = ['brand', 'model'];
-    const bikeQuery = new QueryBuilder_1.default(bike_model_1.Bike.find(), query)
+    const bikeQuery = new QueryBuilder_1.default(bike_model_1.Bike.find().populate({
+        path: 'reviews',
+        select: 'rating',
+    }), query)
         .search(BikeSearchableFields)
         .filter()
         .sort()
@@ -35,7 +38,10 @@ const getAllBikeFromDB = (query) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.getAllBikeFromDB = getAllBikeFromDB;
 const getSingleBikeFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield bike_model_1.Bike.findById(id);
+    const result = yield bike_model_1.Bike.findById(id).populate({
+        path: 'reviews',
+        populate: { path: 'userId', select: 'name image' },
+    });
     return result;
 });
 exports.getSingleBikeFromDB = getSingleBikeFromDB;
