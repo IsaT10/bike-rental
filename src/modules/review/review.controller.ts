@@ -7,13 +7,14 @@ import {
   getReviewByIdFromDB,
   updateReviewInDB,
   deleteReviewFromDB,
-  getAllReviewFromDB,
+  getAllReviewByUserFromDB,
+  getAllReviewByAdminFromDB,
 } from './review.service';
 
 const createReview = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.user;
-  const { bikeId } = req.params;
-  const data = await createReviewIntoDB(id, bikeId, req.body);
+  const { bikeId, rentId } = req.params;
+  const data = await createReviewIntoDB(id, rentId, bikeId, req.body);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.CREATED,
@@ -32,14 +33,25 @@ const getReviewById = catchAsync(async (req: Request, res: Response) => {
     data,
   });
 });
-const getAllReview = catchAsync(async (req: Request, res: Response) => {
+const getAllReviewByUser = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.user;
-  const data = await getAllReviewFromDB(id);
+  const { result, meta } = await getAllReviewByUserFromDB(req.query, id);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: 'Reviews retrieved successfully',
-    data,
+    meta,
+    data: result,
+  });
+});
+const getAllReviewByAdmin = catchAsync(async (req: Request, res: Response) => {
+  const { result, meta } = await getAllReviewByAdminFromDB(req.query);
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Reviews retrieved successfully',
+    meta,
+    data: result,
   });
 });
 
@@ -71,5 +83,6 @@ export {
   getReviewById,
   updateReview,
   deleteReview,
-  getAllReview,
+  getAllReviewByUser,
+  getAllReviewByAdmin,
 };

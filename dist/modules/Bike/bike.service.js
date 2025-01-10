@@ -13,12 +13,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getSingleBikeFromDB = exports.deleteBikeFromDB = exports.updateBikeIntoDB = exports.getAllBikeFromDB = exports.createBikeIntoDB = void 0;
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const http_status_1 = __importDefault(require("http-status"));
 const appError_1 = __importDefault(require("../../error/appError"));
 const bike_model_1 = require("./bike.model");
 const QueryBuilder_1 = __importDefault(require("../../builder/QueryBuilder"));
-const createBikeIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield bike_model_1.Bike.create(payload);
+const createBikeIntoDB = (payload, file) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!file) {
+        throw new appError_1.default(http_status_1.default.NOT_FOUND, 'Image is required');
+    }
+    const result = yield bike_model_1.Bike.create(Object.assign(Object.assign({}, payload), { image: file.path }));
     return result;
 });
 exports.createBikeIntoDB = createBikeIntoDB;
@@ -31,10 +35,11 @@ const getAllBikeFromDB = (query) => __awaiter(void 0, void 0, void 0, function* 
         .search(BikeSearchableFields)
         .filter()
         .sort()
-        // .pagination()
+        .pagination()
         .fields();
     const result = yield bikeQuery.queryModel;
-    return result;
+    const meta = yield bikeQuery.countTotal();
+    return { result, meta };
 });
 exports.getAllBikeFromDB = getAllBikeFromDB;
 const getSingleBikeFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {

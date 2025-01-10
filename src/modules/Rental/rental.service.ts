@@ -74,7 +74,6 @@ const updateRentalIntoDB = async (id: string) => {
     'bikeId'
   );
 
-  console.log({ rental });
   //check rental is exists
   if (!rental) {
     throw new AppError(httpStatus.NOT_FOUND, 'No Data Found');
@@ -155,7 +154,10 @@ const getRentalFromDB = async (id: string, query: Record<string, unknown>) => {
   //check user is exists or not
   await User.isValidUser(id);
 
-  const rentalQuery = new QueryBuilder(Rental.find({ userId: id }), query)
+  const rentalQuery = new QueryBuilder(
+    Rental.find({ userId: id }).populate('bikeId', 'model brand image'),
+    query
+  )
     .search([])
     .filter()
     .sort()
@@ -163,12 +165,16 @@ const getRentalFromDB = async (id: string, query: Record<string, unknown>) => {
     .fields();
 
   const result = await rentalQuery.queryModel;
+  const meta = await rentalQuery.countTotal();
 
-  return result;
+  return { result, meta };
 };
 
 const getAllRentalFromDB = async (query: Record<string, unknown>) => {
-  const rentalQuery = new QueryBuilder(Rental.find(), query)
+  const rentalQuery = new QueryBuilder(
+    Rental.find().populate('bikeId', 'model brand image'),
+    query
+  )
     .search([])
     .filter()
     .sort()
@@ -176,9 +182,11 @@ const getAllRentalFromDB = async (query: Record<string, unknown>) => {
     .fields();
 
   const result = await rentalQuery.queryModel;
+  const meta = await rentalQuery.countTotal();
 
-  return result;
+  return { result, meta };
 };
+
 const changePaymentStatusFromDB = async (id: string) => {
   const result = await Rental.findByIdAndUpdate(
     id,
@@ -199,9 +207,25 @@ const changePaymentStatusFromDB = async (id: string) => {
   return result;
 };
 
+const cancleRentFromDB = async (id: string) => {
+  const result = await Rental.findByIdAndUpdate(
+    id,
+    { isCancelled: true },
+
+    { new: true }
+  );
+
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Rent not found found!');
+  }
+
+  return result;
+};
+
 export {
   createRentalIntoDB,
   updateRentalIntoDB,
+  cancleRentFromDB,
   getRentalFromDB,
   getAllRentalFromDB,
   changePaymentStatusFromDB,

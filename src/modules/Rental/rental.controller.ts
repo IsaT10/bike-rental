@@ -3,6 +3,7 @@ import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status';
 import {
+  cancleRentFromDB,
   changePaymentStatusFromDB,
   createRentalIntoDB,
   getAllRentalFromDB,
@@ -38,24 +39,26 @@ const upadteRental = catchAsync(async (req: Request, res: Response) => {
 const getRentals = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.user;
 
-  const data = await getRentalFromDB(id, req.query);
+  const { result, meta } = await getRentalFromDB(id, req.query);
 
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: 'Rentals retrieved successfully',
-    data,
+    meta,
+    data: result,
   });
 });
 
 const getAllRentals = catchAsync(async (req: Request, res: Response) => {
-  const data = await getAllRentalFromDB(req.query);
+  const { result, meta } = await getAllRentalFromDB(req.query);
 
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: 'Rentals retrieved successfully',
-    data,
+    meta,
+    data: result,
   });
 });
 
@@ -70,6 +73,17 @@ const changePaymentStatus = catchAsync(async (req: Request, res: Response) => {
     data,
   });
 });
+const cancleRent = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const data = await cancleRentFromDB(id);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Cancle rent!',
+    data,
+  });
+});
 
 export {
   createRental,
@@ -77,4 +91,5 @@ export {
   getRentals,
   getAllRentals,
   changePaymentStatus,
+  cancleRent,
 };

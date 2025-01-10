@@ -9,8 +9,13 @@ const BikeSchema = new mongoose_1.Schema({
     isAvailable: { type: Boolean, default: true },
     cc: { type: Number, required: true },
     year: { type: Number, required: true },
+    horsepower: { type: Number, required: true },
+    highestKmph: { type: Number, required: true },
+    bikeWeight: { type: Number, required: true },
     model: { type: String, required: true, unique: true },
     brand: { type: String, required: true },
+    tag: { type: String, required: true },
+    gear: { type: String, required: true },
 }, {
     versionKey: false,
     toJSON: { virtuals: true },

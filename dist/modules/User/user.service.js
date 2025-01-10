@@ -42,7 +42,8 @@ const getAllUserFromDB = (query) => __awaiter(void 0, void 0, void 0, function* 
         .pagination()
         .fields();
     const result = yield userQuery.queryModel;
-    return result;
+    const meta = yield userQuery.countTotal();
+    return { result, meta };
 });
 exports.getAllUserFromDB = getAllUserFromDB;
 const updateProfileIntoDB = (id, payload, file) => __awaiter(void 0, void 0, void 0, function* () {

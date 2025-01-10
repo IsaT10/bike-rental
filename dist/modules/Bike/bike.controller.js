@@ -18,7 +18,7 @@ const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const http_status_1 = __importDefault(require("http-status"));
 const bike_service_1 = require("./bike.service");
 const createBike = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const data = yield (0, bike_service_1.createBikeIntoDB)(req.body);
+    const data = yield (0, bike_service_1.createBikeIntoDB)(req.body, req === null || req === void 0 ? void 0 : req.file);
     (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: http_status_1.default.OK,
@@ -28,12 +28,13 @@ const createBike = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
 }));
 exports.createBike = createBike;
 const getAllBike = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const data = yield (0, bike_service_1.getAllBikeFromDB)(req.query);
+    const { result, meta } = yield (0, bike_service_1.getAllBikeFromDB)(req.query);
     (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: http_status_1.default.OK,
         message: 'Bikes retrived successfully',
-        data,
+        meta,
+        data: result,
     });
 }));
 exports.getAllBike = getAllBike;

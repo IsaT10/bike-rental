@@ -12,15 +12,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllReview = exports.deleteReview = exports.updateReview = exports.getReviewById = exports.createReview = void 0;
+exports.getAllReviewByAdmin = exports.getAllReviewByUser = exports.deleteReview = exports.updateReview = exports.getReviewById = exports.createReview = void 0;
 const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const http_status_1 = __importDefault(require("http-status"));
 const review_service_1 = require("./review.service");
 const createReview = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.user;
-    const { bikeId } = req.params;
-    const data = yield (0, review_service_1.createReviewIntoDB)(id, bikeId, req.body);
+    const { bikeId, rentId } = req.params;
+    const data = yield (0, review_service_1.createReviewIntoDB)(id, rentId, bikeId, req.body);
     (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: http_status_1.default.CREATED,
@@ -40,17 +40,29 @@ const getReviewById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
     });
 }));
 exports.getReviewById = getReviewById;
-const getAllReview = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllReviewByUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.user;
-    const data = yield (0, review_service_1.getAllReviewFromDB)(id);
+    const { result, meta } = yield (0, review_service_1.getAllReviewByUserFromDB)(req.query, id);
     (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: http_status_1.default.OK,
         message: 'Reviews retrieved successfully',
-        data,
+        meta,
+        data: result,
     });
 }));
-exports.getAllReview = getAllReview;
+exports.getAllReviewByUser = getAllReviewByUser;
+const getAllReviewByAdmin = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { result, meta } = yield (0, review_service_1.getAllReviewByAdminFromDB)(req.query);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: 'Reviews retrieved successfully',
+        meta,
+        data: result,
+    });
+}));
+exports.getAllReviewByAdmin = getAllReviewByAdmin;
 const updateReview = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { reviewId } = req.params;
     const data = yield (0, review_service_1.updateReviewInDB)(reviewId, req.body);

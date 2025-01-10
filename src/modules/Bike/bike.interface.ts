@@ -8,4 +8,9 @@ export interface TBike {
   year: number;
   model: string;
   brand: string;
+  tag: string;
+  horsepower: number;
+  highestKmph: number;
+  bikeWeight: number;
+  gear: string;
 }

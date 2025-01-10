@@ -9,4 +9,5 @@ router.put('/:id/return', (0, auth_1.auth)('admin'), rental_controller_1.upadteR
 router.get('/', (0, auth_1.auth)('admin', 'user'), rental_controller_1.getRentals);
 router.get('/all', (0, auth_1.auth)('admin'), rental_controller_1.getAllRentals);
 router.patch('/:id', (0, auth_1.auth)('admin', 'user'), rental_controller_1.changePaymentStatus);
+router.patch('/:id/cancelRent', (0, auth_1.auth)('admin', 'user'), rental_controller_1.cancleRent);
 exports.default = router;

@@ -10,4 +10,6 @@ export interface TRental {
   isPaid: boolean;
   advancedPayment: number;
   isRental: boolean;
+  isReviewed: boolean;
+  isCancelled: boolean;
 }

@@ -24,13 +24,14 @@ const getProfile = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getUsers = catchAsync(async (req: Request, res: Response) => {
-  const data = await getAllUserFromDB(req.query);
+  const { result, meta } = await getAllUserFromDB(req.query);
 
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: 'Users retrieved successfully',
-    data,
+    meta,
+    data: result,
   });
 });
 

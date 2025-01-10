@@ -37,8 +37,9 @@ const getAllUserFromDB = async (query: Record<string, unknown>) => {
     .fields();
 
   const result = await userQuery.queryModel;
+  const meta = await userQuery.countTotal();
 
-  return result;
+  return { result, meta };
 };
 
 const updateProfileIntoDB = async (

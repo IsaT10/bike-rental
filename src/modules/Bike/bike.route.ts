@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 import { auth } from '../../middleware/auth';
 import {
   createBike,
@@ -12,12 +12,18 @@ import {
   createBikeValidationSchema,
   updateBikeValidationSchema,
 } from './bike.validation';
+import { multerUpload } from '../../config/multer.config';
 
 const router = Router();
 
 router.post(
   '/',
   auth('admin'),
+  multerUpload.single('image'),
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = JSON.parse(req.body.data);
+    next();
+  },
   validateRequest(createBikeValidationSchema),
   createBike
 );

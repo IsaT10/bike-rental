@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { auth } from '../../middleware/auth';
 import {
+  cancleRent,
   changePaymentStatus,
   createRental,
   getAllRentals,
@@ -17,5 +18,6 @@ router.get('/', auth('admin', 'user'), getRentals);
 
 router.get('/all', auth('admin'), getAllRentals);
 router.patch('/:id', auth('admin', 'user'), changePaymentStatus);
+router.patch('/:id/cancelRent', auth('admin', 'user'), cancleRent);
 
 export default router;
